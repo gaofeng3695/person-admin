@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="renderer" content="webkit">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>个人信用查询</title>
+
+  <link rel="stylesheet" href="./element-ui/v2.4.1/theme-chalk/index.min.css">
+  <style>
+    [v-cloak] {
+        display: none;
+    }
+    *{
+			margin: 0;
+			padding: 0;
+		}
+    .result .el-form-item{
+      margin-bottom: 4px;
+    }
+    .result .el-form-item label{
+      font-size: 14px;
+      color:#333;
+    }
+	</style>
+
+</head>
+
+<body>
+  <div id="app" v-cloak>
+    <el-container>
+
+      <el-header style="font-size: 22px;color:white;background: #409eff;">
+        <div style="height:100%;line-height: 60px;font-size: 22px;color:white;">信用查询</div>
+      </el-header>
+
+      <el-container>
+        <el-form ref="form" style="margin-top:25px;" :rules="rules" :model="form" label-width="100px">
+          <el-form-item label="姓名" prop="name">
+            <el-input v-model="form.name"></el-input>
+          </el-form-item>
+          <el-form-item label="身份证" prop="code">
+            <el-input v-model="form.code"></el-input>
+          </el-form-item>
+          <el-form-item label="客户情况" prop="desc">
+            <el-input v-model="form.desc"></el-input>
+          </el-form-item>
+          <el-form-item>
+            <el-button type="primary" @click="submit">查询</el-button>
+          </el-form-item>
+        </el-form>
+      </el-container>
+
+    </el-container>
+    <el-dialog title="查询结果" :visible.sync="centerDialogVisible" :width="dialogwidth" center>
+      <el-form class="result" ref="form2" style="" label-width="90px">
+        <el-form-item label="姓名：" prop="name">
+          {{form.name}}
+        </el-form-item>
+        <el-form-item label="身份证：" prop="code">
+          {{form.code}}
+        </el-form-item>
+        <el-form-item label="评分：" prop="desc">
+          <el-rate style="margin-top:10px;" disabled v-model="value2" :texts="['极差','差','一般','好','极好']" :colors="['red', '#F7BA2A', '#FF9900']"
+            show-text>
+          </el-rate>
+        </el-form-item>
+        <el-form-item label="原因：" prop="reason">
+          {{reason}}
+        </el-form-item>
+        <el-form-item label="组织代码：" prop="secondcode">
+          {{secondcode}}
+        </el-form-item>
+
+
+      </el-form> <span slot="footer" class="dialog-footer">
+        <el-button type="primary" @click="centerDialogVisible = false">确 定</el-button>
+      </span>
+    </el-dialog>
+
+  </div>
+
+</body>
+<script src="./vue/vue.js"></script>
+<script src="./element-ui/v2.4.1/index.min.js"></script>
+<script>
+  window.app = new Vue({
+    el: '#app',
+    data: function () {
+      return {
+        dialogwidth: innerWidth > 800 ? '50%' : '90%',
+        centerDialogVisible: false,
+        form: {
+          name: '',
+          code: '',
+          desc: '',
+        },
+        secondcode: 0,
+        reason: '',
+        value2: 2,
+        rules: {
+          name: [{
+            required: true,
+            message: '请输入姓名',
+            trigger: 'blur'
+          }],
+          code: [{
+            required: true,
+            message: '请输入身份证号',
+            trigger: 'blur'
+          }, {
+            min: 18,
+            max: 18,
+            message: '请输入18位身份证号',
+            trigger: 'blur'
+          }],
+        }
+      }
+    },
+    created: function () {
+      this.setResult();
+    },
+    watch: {
+      centerDialogVisible: function () {
+        this.setResult();
+      }
+    },
+    methods: {
+      setResult: function () {
+        this.dialogwidth = innerWidth > 800 ? '50%' : '90%';
+        this.secondcode = Math.ceil((Math.random() * (0.9 - 0.1) + 0.1) * 1000000000000);
+        this.reason = this.form.desc || '保密';
+      },
+      submit: function () {
+        this.$refs.form.validate((valid) => {
+          if (valid) {
+            this.centerDialogVisible = true;
+          } else {
+            console.log('error submit!!');
+            return false;
+          }
+        });
+      }
+    },
+  })
+</script>
+
+</html>
